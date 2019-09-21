@@ -7,18 +7,13 @@ public class DialogLogic {
         this.storage = storage;
     }
 
-    public void executeCommand(String command) {
-        String standardAnswer = this.storage.getAnswerByLine(command);
+    public String executeCommand(String command) {
+        var standardAnswer = this.storage.getAnswerByLine(command);
         switch (command) {
             case "/show":
-                System.out.println(standardAnswer);
-                break;
-            case "/exit":
-                System.exit(0);
-                break;
+                return standardAnswer;
             default:
-                System.out.println(standardAnswer);
-                break;
+                return standardAnswer;
         }
     }
 }

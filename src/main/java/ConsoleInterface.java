@@ -7,10 +7,13 @@ public class ConsoleInterface {
     private Scanner scan = new Scanner(System.in);
 
     public void start() {
-        this.logic.executeCommand("/start");
+        System.out.println(this.logic.executeCommand("/start"));
         while (true) {
-            String input = scan.next();
-            this.logic.executeCommand(input);
+            var input = scan.next();
+            System.out.println(this.logic.executeCommand(input));
+            if (input.equals("/exit")) {
+                break;
+            }
         }
     }
 }
