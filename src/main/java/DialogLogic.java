@@ -7,9 +7,9 @@ public class DialogLogic {
         this.storage = storage;
     }
 
-    public void generateAnswerByLine(String line) {
-        String standardAnswer = this.storage.getAnswerByLine(line);
-        switch (line) {
+    public void executeCommand(String command) {
+        String standardAnswer = this.storage.getAnswerByLine(command);
+        switch (command) {
             case "/show":
                 System.out.println(standardAnswer);
                 break;

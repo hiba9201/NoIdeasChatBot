@@ -7,10 +7,10 @@ public class ConsoleInterface {
     private Scanner scan = new Scanner(System.in);
 
     public void start() {
-        this.logic.generateAnswerByLine("/start");
+        this.logic.executeCommand("/start");
         while (true) {
             String input = scan.next();
-            this.logic.generateAnswerByLine(input);
+            this.logic.executeCommand(input);
         }
     }
 }
