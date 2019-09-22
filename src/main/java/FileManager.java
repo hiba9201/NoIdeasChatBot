@@ -33,7 +33,7 @@ public class FileManager {
         return lines.toString();
     }
 
-    public static ScheduleEvent[] JsonParse(String jsonString) {
+    public static ScheduleEvent[] jsonParse(String jsonString) {
         Gson gson = new Gson();
         return gson.fromJson(jsonString, ScheduleEvent[].class);
     }
