@@ -12,7 +12,7 @@ public class FileManager {
     public FileManager() {
     }
 
-    public static String ReadFile(String fileName) {
+    public static String readFile(String fileName) {
         File file = new File(fileName);
         StringBuilder lines = new StringBuilder();
         Scanner scanner = new Scanner(System.in);
