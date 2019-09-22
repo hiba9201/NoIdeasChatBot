@@ -1,5 +1,3 @@
-package main.java;
-
 public class DialogLogic {
     private Storage storage;
 
