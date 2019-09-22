@@ -2,7 +2,7 @@ public class ScheduleEvent
 {
     public String Name;
     public String Date;
-    public String  Time;
+    public String Time;
 
     @Override
     public String toString() {
