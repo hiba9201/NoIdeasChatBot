@@ -1,17 +1,9 @@
 public class DialogLogic {
-    private Storage storage;
-
-    public DialogLogic(Storage storage) {
-        this.storage = storage;
-    }
+    private AnswerGenerator answerGenerator = new AnswerGenerator();
 
     public String executeCommand(String command) {
-        var standardAnswer = this.storage.getAnswerByLine(command);
-        switch (command) {
-            case "/show":
-                return standardAnswer;
-            default:
-                return standardAnswer;
-        }
+        String answer = this.answerGenerator.generateAnswerByLine(command);
+
+        return answer;
     }
 }

@@ -1,7 +1,6 @@
 public class TimeManagementChatBot {
-public static void main(String[] args){
-        //ScheduleEvent[] events = FileManager.JsonParse(FileManager.ReadFile("user1.json"));
-        var console = new ConsoleInterface();
+    public static void main(String[] args) {
+        ConsoleInterface console = new ConsoleInterface();
         console.start();
     }
 }
