@@ -1,15 +1,17 @@
 public class User {
-    private String ScheduleFile;
+    private String scheduleFileName;
+    private String ID;
 
-    public User(String fileName) {
-        this.ScheduleFile = fileName;
+    public User(String fileName, String ID) {
+        this.scheduleFileName = fileName;
+        this.ID = ID;
     }
 
-    public String getScheduleFile() {
-        return ScheduleFile;
+    public String getScheduleFileName() {
+        return scheduleFileName;
     }
 
-    private void setScheduleFile(String scheduleFile) {
-        ScheduleFile = scheduleFile;
+    public String getID() {
+        return ID;
     }
 }
