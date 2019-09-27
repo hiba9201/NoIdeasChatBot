@@ -35,7 +35,7 @@ public class AnswerGenerator {
 
     public String generateAllEventsList() {
         StringBuilder result = new StringBuilder();
-        ComponentList events = FileManager.parseIcsFormat(new User("user1.ics", "1"));
+        ComponentList events = FileManager.parseIcsFormat("0000.ics");
 
         for (Object elem : events) {
             VEvent event = (VEvent) elem;

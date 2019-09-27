@@ -27,12 +27,12 @@ public class FileManager {
         calendar.getProperties().add(CalScale.GREGORIAN);
     }
 
-    static ComponentList parseIcsFormat(User user) {
+    static ComponentList parseIcsFormat(String fileName) {
         CalendarBuilder builder = new CalendarBuilder();
 
         FileInputStream inputStream = null;
         try {
-            inputStream = new FileInputStream(FileManager.class.getResource(user.getScheduleFileName()).getPath());
+            inputStream = new FileInputStream(FileManager.class.getResource(fileName).getPath());
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
