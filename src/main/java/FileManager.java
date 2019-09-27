@@ -13,7 +13,7 @@ public class FileManager {
     }
 
     public static String readFile(String fileName) {
-        File file = new File(fileName);
+        File file = new File(FileManager.class.getResource(fileName).getPath());
         StringBuilder lines = new StringBuilder();
         Scanner scanner = new Scanner(System.in);
 
