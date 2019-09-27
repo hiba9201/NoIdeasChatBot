@@ -1,12 +1,8 @@
 import net.fortuna.ical4j.model.ComponentList;
 import net.fortuna.ical4j.model.component.VEvent;
-import net.fortuna.ical4j.model.property.DtStamp;
-import net.fortuna.ical4j.model.property.DtStart;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -39,7 +35,7 @@ public class AnswerGenerator {
 
     public String generateAllEventsList() {
         StringBuilder result = new StringBuilder();
-        ComponentList events = FileManager.parseEventList(new User("user1.ics", "1"));
+        ComponentList events = FileManager.parseIcsFormat(new User("user1.ics", "1"));
 
         for (Object elem : events) {
             VEvent event = (VEvent) elem;

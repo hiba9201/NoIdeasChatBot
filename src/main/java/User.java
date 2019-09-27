@@ -2,12 +2,12 @@ public class User {
     private String scheduleFileName;
     private String ID;
 
-    public User(String fileName, String ID) {
+    User(String fileName, String ID) {
         this.scheduleFileName = fileName;
         this.ID = ID;
     }
 
-    public String getScheduleFileName() {
+    String getScheduleFileName() {
         return scheduleFileName;
     }
 

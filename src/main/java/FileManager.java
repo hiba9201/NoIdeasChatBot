@@ -1,4 +1,5 @@
 import net.fortuna.ical4j.data.CalendarBuilder;
+import net.fortuna.ical4j.data.ParserException;
 import net.fortuna.ical4j.model.Calendar;
 import net.fortuna.ical4j.model.Component;
 import net.fortuna.ical4j.model.ComponentList;
@@ -8,6 +9,7 @@ import net.fortuna.ical4j.model.property.Version;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -20,12 +22,14 @@ public class FileManager {
 
     public static void createCalender() {
         Calendar calendar = new Calendar();
-        calendar.getProperties().add(new ProdId("-//habrahabr"));
+        calendar.getProperties().add(new ProdId("-//timeManagementChatBot"));
         calendar.getProperties().add(Version.VERSION_2_0);
         calendar.getProperties().add(CalScale.GREGORIAN);
     }
 
-    static ComponentList parseEventList(User user) {
+    static ComponentList parseIcsFormat(User user) {
+        CalendarBuilder builder = new CalendarBuilder();
+
         FileInputStream inputStream = null;
         try {
             inputStream = new FileInputStream(FileManager.class.getResource(user.getScheduleFileName()).getPath());
@@ -34,11 +38,10 @@ public class FileManager {
         }
         assert inputStream != null;
 
-        CalendarBuilder builder = new CalendarBuilder();
         Calendar calendar = null;
         try {
             calendar = builder.build(inputStream);
-        } catch (Exception e) {
+        } catch (IOException | ParserException e) {
             e.printStackTrace();
         }
         assert calendar != null;
