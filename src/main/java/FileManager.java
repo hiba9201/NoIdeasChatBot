@@ -15,7 +15,6 @@ import java.util.Map;
 
 
 public class FileManager {
-    private Map<String, ComponentList> users = new HashMap<>();
 
     public FileManager() {
     }
