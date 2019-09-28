@@ -1,40 +1,50 @@
-import com.google.gson.Gson;
+import net.fortuna.ical4j.data.CalendarBuilder;
+import net.fortuna.ical4j.data.ParserException;
+import net.fortuna.ical4j.model.Calendar;
+import net.fortuna.ical4j.model.Component;
+import net.fortuna.ical4j.model.ComponentList;
+import net.fortuna.ical4j.model.property.CalScale;
+import net.fortuna.ical4j.model.property.ProdId;
+import net.fortuna.ical4j.model.property.Version;
 
-import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.util.ArrayList;
-import java.util.Scanner;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 
 public class FileManager {
-    private ArrayList<User> users = new ArrayList<User>();
 
     public FileManager() {
     }
 
-    public static String readFile(String fileName) {
-        File file = new File(fileName);
-        StringBuilder lines = new StringBuilder();
-        Scanner scanner = new Scanner(System.in);
-
-        try {
-            scanner = new Scanner(file);
-
-            while (scanner.hasNextLine()) {
-                String line = scanner.nextLine().trim();
-                lines.append(line);
-            }
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } finally {
-            scanner.close();
-        }
-
-        return lines.toString();
+    public static void createCalender() {
+        Calendar calendar = new Calendar();
+        calendar.getProperties().add(new ProdId("-//timeManagementChatBot"));
+        calendar.getProperties().add(Version.VERSION_2_0);
+        calendar.getProperties().add(CalScale.GREGORIAN);
     }
 
-    public static ScheduleEvent[] jsonParse(String jsonString) {
-        Gson gson = new Gson();
-        return gson.fromJson(jsonString, ScheduleEvent[].class);
+    static ComponentList parseIcsFormat(String fileName) {
+        CalendarBuilder builder = new CalendarBuilder();
+
+        FileInputStream inputStream = null;
+        try {
+            inputStream = new FileInputStream(FileManager.class.getResource(fileName).getPath());
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        assert inputStream != null;
+
+        Calendar calendar = null;
+        try {
+            calendar = builder.build(inputStream);
+        } catch (IOException | ParserException e) {
+            e.printStackTrace();
+        }
+        assert calendar != null;
+
+        return calendar.getComponents(Component.VEVENT);
     }
 }
