@@ -17,11 +17,9 @@ public class AnswerGenerator {
         lineStorage.put("/help", new String[]{"Я бот, помогающий составить расписание. Вот что я могу:\n" +
                 "Показать все события - /show\n" +
                 "Вывести это сообщение - /help\n" +
-                "Выйти из диалога - /exit\n" +
                 "Добавить событие - /add"});
         lineStorage.put("/show", new String[]{"Вот твое расписание:"});
         lineStorage.put("/else", new String[]{"Я существую и не понимаю"});
-        lineStorage.put("/exit", new String[]{"До скорых встреч!"});
         lineStorage.put("/add", new String[]{"Введите название события:",
                                              "Введите дату события:",
                                              "Введите время события:"});
