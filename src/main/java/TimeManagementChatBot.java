@@ -5,16 +5,16 @@ import org.telegram.telegrambots.exceptions.TelegramApiRequestException;
 public class TimeManagementChatBot {
     public static void main(String[] args) {
 
-//        ApiContextInitializer.init();
-//
-//        TelegramBotsApi telegramBotsApi = new TelegramBotsApi();
-//
-//        try {
-//            telegramBotsApi.registerBot(new Bot());
-//        } catch (TelegramApiRequestException e) {
-//            e.printStackTrace();
-//        }
-        ConsoleInterface console = new ConsoleInterface();
-        console.start();
+        ApiContextInitializer.init();
+
+        TelegramBotsApi telegramBotsApi = new TelegramBotsApi();
+
+        try {
+            telegramBotsApi.registerBot(new Bot());
+        } catch (TelegramApiRequestException e) {
+            e.printStackTrace();
+        }
+//        ConsoleInterface console = new ConsoleInterface();
+//        console.start();
     }
 }

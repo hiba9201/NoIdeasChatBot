@@ -1,4 +1,3 @@
-import com.sun.xml.internal.ws.policy.privateutil.PolicyUtils;
 import net.fortuna.ical4j.data.CalendarBuilder;
 import net.fortuna.ical4j.data.CalendarOutputter;
 import net.fortuna.ical4j.data.ParserException;
@@ -7,7 +6,6 @@ import net.fortuna.ical4j.model.component.VEvent;
 import net.fortuna.ical4j.model.property.*;
 
 import java.io.*;
-import java.net.URISyntaxException;
 import java.util.GregorianCalendar;
 
 
@@ -16,39 +14,47 @@ public class FileManager {
     public FileManager() {
     }
 
-    public static Calendar addEvent(Calendar calendar, String event) {
+    public static Calendar addEvent(Calendar calendar, AdditionEvent event) {
+        String eventName = "Встреча с подрушшками";
+        //String eventName = event.getName();
 
         java.util.Calendar startDate = new GregorianCalendar();
-        startDate.set(java.util.Calendar.MONTH, java.util.Calendar.NOVEMBER);
-        startDate.set(java.util.Calendar.DAY_OF_MONTH, 10);
+        startDate.set(java.util.Calendar.DAY_OF_MONTH, 16);
+        startDate.set(java.util.Calendar.MONTH, java.util.Calendar.OCTOBER);
         startDate.set(java.util.Calendar.YEAR, 2019);
         startDate.set(java.util.Calendar.HOUR_OF_DAY, 19);
-        startDate.set(java.util.Calendar.MINUTE, 0);
+        startDate.set(java.util.Calendar.MINUTE, 30);
         startDate.set(java.util.Calendar.SECOND, 0);
-
-        // Создаем событие
-        String eventName = "Какое-то мероприятие";
         DateTime start = new DateTime(startDate.getTime());
+        //Date start = event.getDate();
+
         VEvent meeting = new VEvent(start, eventName);
-        meeting.getProperties().add(new Description("Aaaa"));
-        meeting.getProperties().add(new Uid("aaa"));
+
+        meeting.getProperties().add(new Description("Ура!"));
+        //meeting.getProperties().add(new Description(event.getDescription()));
+
+        meeting.getProperties().add(new Uid("0000"));
+        //Нужно знать id пользователя
 
         calendar.getComponents().add(meeting);
         return calendar;
     }
 
     public static void saveCalendar(Calendar calendar, String fileName) throws IOException {
-        //String path = ".." + File.separator + "resources" + File.separator + fileName;
-        String path = fileName;
-        File calendarFile = new File(path);
-        if (!calendarFile.exists()) {
-            //calendarFile.getParentFile().mkdirs();
-            calendarFile.createNewFile();
+        File file = new File("src" + File.separator + "main" + File.separator +
+                              "resources" + File.separator + fileName);
+        if (!file.exists()) {
+            try {
+                file.createNewFile();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
-        FileOutputStream fout = new FileOutputStream(path);
-        CalendarOutputter out = new CalendarOutputter();
+
+        FileOutputStream fileOutputStream = new FileOutputStream(file);
+        CalendarOutputter outputter = new CalendarOutputter();
         try {
-            out.output(calendar, fout);
+            outputter.output(calendar, fileOutputStream);
         } catch (ValidationException e) {
             e.printStackTrace();
         }
