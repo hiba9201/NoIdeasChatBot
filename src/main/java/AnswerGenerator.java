@@ -1,12 +1,15 @@
+import net.fortuna.ical4j.model.Calendar;
 import net.fortuna.ical4j.model.ComponentList;
 import net.fortuna.ical4j.model.component.VEvent;
 
+import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.HashMap;
 import java.util.Map;
 
 public class AnswerGenerator {
+    private String newEvent = "";
     private Map<String, String[]> lineStorage = new HashMap<>();
     public DialogMode currentMode = DialogMode.DEFAULT;
     private int modeStep = 0;
@@ -26,15 +29,22 @@ public class AnswerGenerator {
     }
 
     public String generateAnswerByLine(String line) {
-        if (currentMode != DialogMode.DEFAULT) {
+        if (currentMode == DialogMode.ADD) {
+            this.newEvent += line;
             // делаем что-то с поданной строкой
             String[] answersArray = this.lineStorage.get(line);
             modeStep += 1;
             if (modeStep >= answersArray.length) {
                 currentMode = DialogMode.DEFAULT;
+                Calendar calendar = FileManager.addEvent(FileManager.getCalendar("0000.ics"), this.newEvent);
+                try {
+                    FileManager.saveCalendar(calendar, "0000.ics");
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                this.newEvent = "";
                 return "Готово!";
-            }
-            else {
+            } else {
                 return answersArray[modeStep];
             }
         }
@@ -59,13 +69,13 @@ public class AnswerGenerator {
 
     public String generateAllEventsList() {
         StringBuilder result = new StringBuilder();
-        ComponentList events = FileManager.parseIcsFormat("0000.ics");
+        ComponentList events = FileManager.getCalendarEvents(FileManager.getCalendar("0000.ics"));
 
         for (Object elem : events) {
             VEvent event = (VEvent) elem;
             String description = event.getDescription().getValue();
             String title = event.getSummary().getValue();
-            String pattern = "MM/dd/yyyy HH:mm:ss";
+            String pattern = "dd/MM/yyyy HH:mm";
             DateFormat dateFormat = new SimpleDateFormat(pattern);
             String date = dateFormat.format(event.getStartDate().getDate());
 
