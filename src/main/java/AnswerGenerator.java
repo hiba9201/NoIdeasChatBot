@@ -51,7 +51,6 @@ public class AnswerGenerator {
     public String generateAllEventsList() {
         StringBuilder result = new StringBuilder();
         FileManager user = new FileManager("0000");
-        System.out.println("generateAllEventsList method");
         ComponentList events = user.getCalendarEvents();
 
         for (Object elem : events) {

@@ -71,31 +71,21 @@ public class FileManager {
     }
 
     public Calendar getCalendar() {
-        System.out.println("getCalendar method");
         CalendarBuilder builder = new CalendarBuilder();
-
-        FileInputStream inputStream = null;
-        try {
-            inputStream = new FileInputStream(FileManager.class.getResource(this.userID + ".ics").getPath());
-            System.out.println("Read");
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
-        assert inputStream != null;
-
         Calendar calendar = null;
-        try {
+        String path = FileManager.class.getResource(this.userID + ".ics").getPath();
+
+        try (FileInputStream inputStream = new FileInputStream(path)){
             calendar = builder.build(inputStream);
         } catch (IOException | ParserException e) {
             e.printStackTrace();
         }
-        assert calendar != null;
 
+        assert calendar != null;
         return calendar;
     }
 
     public ComponentList getCalendarEvents() {
-        System.out.println("getCalendarEvents method");
         Calendar calendar = getCalendar();
         return calendar.getComponents(Component.VEVENT);
     }
