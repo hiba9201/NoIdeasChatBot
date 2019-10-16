@@ -37,7 +37,6 @@ public class FileManager {
         //meeting.getProperties().add(new Description(event.getDescription()));
 
         meeting.getProperties().add(new Uid(this.userID));
-        //Нужно знать id пользователя
 
         calendar.getComponents().add(meeting);
         this.saveCalendar(calendar);
