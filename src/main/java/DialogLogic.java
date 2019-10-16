@@ -9,7 +9,7 @@ public class DialogLogic {
     private AdditionEvent event = new AdditionEvent();
 
     public String executeCommand(String command) {
-
+        FileManager user = new FileManager("0000");
         if (this.currentMode == DialogMode.ADD) {
             switch (this.modeStep) {
                 case 0:
@@ -26,12 +26,13 @@ public class DialogLogic {
 
                     this.currentMode = DialogMode.DEFAULT;
                     this.modeStep = 0;
-                    Calendar calendar = FileManager.addEvent(FileManager.getCalendar("0000.ics"), this.event);
+
                     try {
-                        FileManager.saveCalendar(calendar, "0000.ics");
+                        user.addEvent(this.event);
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
+
                     this.event = new AdditionEvent();
 
                     return "Готово!";
