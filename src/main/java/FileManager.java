@@ -10,11 +10,14 @@ import java.util.GregorianCalendar;
 
 
 public class FileManager {
+    private String userID;
 
-    public FileManager() {
+    public FileManager(String userID) {
+        this.userID = userID;
     }
 
-    public static Calendar addEvent(Calendar calendar, AdditionEvent event) {
+    public void addEvent(AdditionEvent event) throws IOException {
+        Calendar calendar = this.getCalendar();
         String eventName = "Встреча с подрушшками";
         //String eventName = event.getName();
 
@@ -33,16 +36,15 @@ public class FileManager {
         meeting.getProperties().add(new Description("Ура!"));
         //meeting.getProperties().add(new Description(event.getDescription()));
 
-        meeting.getProperties().add(new Uid("0000"));
-        //Нужно знать id пользователя
+        meeting.getProperties().add(new Uid(this.userID));
 
         calendar.getComponents().add(meeting);
-        return calendar;
+        this.saveCalendar(calendar);
     }
 
-    public static void saveCalendar(Calendar calendar, String fileName) throws IOException {
+    private void saveCalendar(Calendar calendar) throws IOException {
         File file = new File("src" + File.separator + "main" + File.separator +
-                              "resources" + File.separator + fileName);
+                              "resources" + File.separator + this.userID + ".ics");
         if (!file.exists()) {
             try {
                 file.createNewFile();
@@ -60,36 +62,30 @@ public class FileManager {
         }
     }
 
-    public static void createCalender() {
+    public void createCalender() {
         Calendar calendar = new Calendar();
         calendar.getProperties().add(new ProdId("-//timeManagementChatBot"));
         calendar.getProperties().add(Version.VERSION_2_0);
         calendar.getProperties().add(CalScale.GREGORIAN);
     }
 
-    static Calendar getCalendar(String fileName) {
+    public Calendar getCalendar() {
         CalendarBuilder builder = new CalendarBuilder();
-
-        FileInputStream inputStream = null;
-        try {
-            inputStream = new FileInputStream(FileManager.class.getResource(fileName).getPath());
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
-        assert inputStream != null;
-
         Calendar calendar = null;
-        try {
+        String path = FileManager.class.getResource(this.userID + ".ics").getPath();
+
+        try (FileInputStream inputStream = new FileInputStream(path)){
             calendar = builder.build(inputStream);
         } catch (IOException | ParserException e) {
             e.printStackTrace();
         }
-        assert calendar != null;
 
+        assert calendar != null;
         return calendar;
     }
 
-    static ComponentList getCalendarEvents(Calendar calendar) {
+    public ComponentList getCalendarEvents() {
+        Calendar calendar = getCalendar();
         return calendar.getComponents(Component.VEVENT);
     }
 }
