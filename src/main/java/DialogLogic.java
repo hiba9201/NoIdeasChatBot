@@ -9,7 +9,7 @@ public class DialogLogic {
     private AdditionEvent event = new AdditionEvent();
 
     public String executeCommand(String command) {
-        FileManager user = new FileManager("0000");
+        FileManager userFile = new FileManager("0000");
         if (this.currentMode == DialogMode.ADD) {
             switch (this.modeStep) {
                 case 0:
@@ -28,7 +28,7 @@ public class DialogLogic {
                     this.modeStep = 0;
 
                     try {
-                        user.addEvent(this.event);
+                        userFile.addEvent(this.event);
                     } catch (IOException e) {
                         e.printStackTrace();
                     }

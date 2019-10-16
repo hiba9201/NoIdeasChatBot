@@ -50,8 +50,8 @@ public class AnswerGenerator {
 
     public String generateAllEventsList() {
         StringBuilder result = new StringBuilder();
-        FileManager user = new FileManager("0000");
-        ComponentList events = user.getCalendarEvents();
+        FileManager userFile = new FileManager("0000");
+        ComponentList events = userFile.getCalendarEvents();
 
         for (Object elem : events) {
             VEvent event = (VEvent) elem;
