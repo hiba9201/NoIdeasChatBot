@@ -61,7 +61,7 @@ public class AnswerGenerator {
             DateFormat dateFormat = new SimpleDateFormat(pattern);
             String date = dateFormat.format(event.getStartDate().getDate());
 
-            result.append(String.format("\n%s     %s : %s", date, title, description));
+            result.append(String.format("\n%s   %s : %s", date, title, description));
         }
         
         return result.toString();

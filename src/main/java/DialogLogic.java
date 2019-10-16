@@ -1,6 +1,7 @@
 import net.fortuna.ical4j.model.Calendar;
 
 import java.io.IOException;
+import java.text.ParseException;
 
 public class DialogLogic {
     private AnswerGenerator answerGenerator = new AnswerGenerator();
@@ -16,10 +17,18 @@ public class DialogLogic {
                     this.event.setName(command);
                     break;
                 case 1:
-                    this.event.setDate(command);
+                    try {
+                        this.event.setDate(command);
+                    } catch (ParseException e) {
+                        e.printStackTrace();
+                    }
                     break;
                 case 2:
-                    this.event.setTime(command);
+                    try {
+                        this.event.setTime(command);
+                    } catch (ParseException e) {
+                        e.printStackTrace();
+                    }
                     break;
                 case 3:
                     this.event.setDescription(command);

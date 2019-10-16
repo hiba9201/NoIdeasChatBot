@@ -6,7 +6,6 @@ import net.fortuna.ical4j.model.component.VEvent;
 import net.fortuna.ical4j.model.property.*;
 
 import java.io.*;
-import java.util.GregorianCalendar;
 
 
 public class FileManager {
@@ -18,23 +17,14 @@ public class FileManager {
 
     public void addEvent(AdditionEvent event) throws IOException {
         Calendar calendar = this.getCalendar();
-        String eventName = "Встреча с подрушшками";
-        //String eventName = event.getName();
+        String eventName = event.getName();
 
-        java.util.Calendar startDate = new GregorianCalendar();
-        startDate.set(java.util.Calendar.DAY_OF_MONTH, 16);
-        startDate.set(java.util.Calendar.MONTH, java.util.Calendar.OCTOBER);
-        startDate.set(java.util.Calendar.YEAR, 2019);
-        startDate.set(java.util.Calendar.HOUR_OF_DAY, 19);
-        startDate.set(java.util.Calendar.MINUTE, 30);
-        startDate.set(java.util.Calendar.SECOND, 0);
+        java.util.Calendar startDate = event.getDate();
         DateTime start = new DateTime(startDate.getTime());
-        //Date start = event.getDate();
 
         VEvent meeting = new VEvent(start, eventName);
 
-        meeting.getProperties().add(new Description("Ура!"));
-        //meeting.getProperties().add(new Description(event.getDescription()));
+        meeting.getProperties().add(new Description(event.getDescription()));
 
         meeting.getProperties().add(new Uid(this.userID));
 
@@ -44,7 +34,7 @@ public class FileManager {
 
     private void saveCalendar(Calendar calendar) throws IOException {
         File file = new File("src" + File.separator + "main" + File.separator +
-                              "resources" + File.separator + this.userID + ".ics");
+                "resources" + File.separator + this.userID + ".ics");
         if (!file.exists()) {
             try {
                 file.createNewFile();
@@ -74,7 +64,7 @@ public class FileManager {
         Calendar calendar = null;
         String path = FileManager.class.getResource(this.userID + ".ics").getPath();
 
-        try (FileInputStream inputStream = new FileInputStream(path)){
+        try (FileInputStream inputStream = new FileInputStream(path)) {
             calendar = builder.build(inputStream);
         } catch (IOException | ParserException e) {
             e.printStackTrace();
