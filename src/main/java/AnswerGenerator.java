@@ -57,11 +57,11 @@ public class AnswerGenerator {
             VEvent event = (VEvent) elem;
             String description = event.getDescription().getValue();
             String title = event.getSummary().getValue();
-            String pattern = "dd.MM.yyyy HH:mm";
+            String pattern = "dd.MM.yyyy KK:mm";
             DateFormat dateFormat = new SimpleDateFormat(pattern);
             String date = dateFormat.format(event.getStartDate().getDate());
 
-            result.append(String.format("\n%s     %s : %s", date, title, description));
+            result.append(String.format("\n%s   %s : %s", date, title, description));
         }
         
         return result.toString();
