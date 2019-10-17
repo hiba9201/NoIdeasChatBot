@@ -10,6 +10,17 @@ public class TestAdditionEvent {
     private AdditionEvent additionEvent = new AdditionEvent();
 
     @Test
+    public void testSetEventName() {
+        additionEvent.setName("Событие");
+        assertEquals("Событие", additionEvent.getName());
+    }
+
+    @Test
+    public void testSetEventDescription() {
+        additionEvent.setName("Описание");
+    }
+
+    @Test
     public void testParseCorrectDate() throws ParseException {
         Calendar calendar = new GregorianCalendar(2000, Calendar.DECEMBER, 11, 9, 54, 0);
         additionEvent.setDate("11.12.2000");
