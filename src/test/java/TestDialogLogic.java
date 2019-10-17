@@ -1,6 +1,7 @@
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 public class TestDialogLogic {
     private DialogLogic dialogLogic = new DialogLogic();
@@ -22,6 +23,17 @@ public class TestDialogLogic {
 
         answer = dialogLogic.executeCommand("Описание");
         assertEquals(answer, "Готово!");
+    }
+
+    @Test
+    public void testEventAdded() {
+        dialogLogic.executeCommand("/add");
+        dialogLogic.executeCommand("Событие");
+        dialogLogic.executeCommand("12.12.2019");
+        dialogLogic.executeCommand("10:45");
+        dialogLogic.executeCommand("Описание");
+        String show = dialogLogic.executeCommand("/show");
+        assertTrue(show.indexOf("12.12.2019 10:45   Событие : Описание") != -1);
     }
 
     @Test
