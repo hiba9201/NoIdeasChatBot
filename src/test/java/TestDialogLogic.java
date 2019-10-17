@@ -33,7 +33,7 @@ public class TestDialogLogic {
         dialogLogic.executeCommand("10:45");
         dialogLogic.executeCommand("Описание");
         String show = dialogLogic.executeCommand("/show");
-        assertTrue(show.indexOf("12.12.2019 10:45   Событие : Описание") != -1);
+        assertTrue(show.contains("12.12.2019 10:45   Событие : Описание"));
     }
 
     @Test
