@@ -1,40 +1,82 @@
-import com.google.gson.Gson;
+import net.fortuna.ical4j.data.CalendarBuilder;
+import net.fortuna.ical4j.data.CalendarOutputter;
+import net.fortuna.ical4j.data.ParserException;
+import net.fortuna.ical4j.model.*;
+import net.fortuna.ical4j.model.component.VEvent;
+import net.fortuna.ical4j.model.property.*;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.util.ArrayList;
-import java.util.Scanner;
+import java.io.*;
 
 
 public class FileManager {
-    private ArrayList<User> users = new ArrayList<User>();
+    private String userID;
 
-    public FileManager() {
+    public FileManager(String userID) {
+        this.userID = userID;
     }
 
-    public static String readFile(String fileName) {
-        File file = new File(fileName);
-        StringBuilder lines = new StringBuilder();
-        Scanner scanner = new Scanner(System.in);
+    public void addEvent(AdditionEvent event) throws IOException {
+        Calendar calendar = this.getCalendar();
+        String eventName = event.getName();
 
-        try {
-            scanner = new Scanner(file);
+        java.util.Calendar startDate = event.getDate();
+        DateTime start = new DateTime(startDate.getTime());
 
-            while (scanner.hasNextLine()) {
-                String line = scanner.nextLine().trim();
-                lines.append(line);
+        VEvent meeting = new VEvent(start, eventName);
+
+        meeting.getProperties().add(new Description(event.getDescription()));
+
+        meeting.getProperties().add(new Uid(this.userID));
+
+        calendar.getComponents().add(meeting);
+        this.saveCalendar(calendar);
+    }
+
+    private void saveCalendar(Calendar calendar) throws IOException {
+        File file = new File("src" + File.separator + "main" + File.separator +
+                "resources" + File.separator + this.userID + ".ics");
+        if (!file.exists()) {
+            try {
+                file.createNewFile();
+            } catch (IOException e) {
+                e.printStackTrace();
             }
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } finally {
-            scanner.close();
         }
 
-        return lines.toString();
+        FileOutputStream fileOutputStream = new FileOutputStream(file);
+        CalendarOutputter outputter = new CalendarOutputter();
+        try {
+            outputter.output(calendar, fileOutputStream);
+        } catch (ValidationException e) {
+            e.printStackTrace();
+        }
     }
 
-    public static ScheduleEvent[] jsonParse(String jsonString) {
-        Gson gson = new Gson();
-        return gson.fromJson(jsonString, ScheduleEvent[].class);
+    public void createCalender() {
+        Calendar calendar = new Calendar();
+        calendar.getProperties().add(new ProdId("-//timeManagementChatBot"));
+        calendar.getProperties().add(Version.VERSION_2_0);
+        calendar.getProperties().add(CalScale.GREGORIAN);
+    }
+
+    public Calendar getCalendar() {
+        CalendarBuilder builder = new CalendarBuilder();
+        Calendar calendar = null;
+        String path = "src" + File.separator + "main" + File.separator +
+                "resources" + File.separator + this.userID + ".ics";
+
+        try (FileInputStream inputStream = new FileInputStream(path)) {
+            calendar = builder.build(inputStream);
+        } catch (IOException | ParserException e) {
+            e.printStackTrace();
+        }
+
+        assert calendar != null;
+        return calendar;
+    }
+
+    public ComponentList getCalendarEvents() {
+        Calendar calendar = getCalendar();
+        return calendar.getComponents(Component.VEVENT);
     }
 }
