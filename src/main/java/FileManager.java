@@ -62,7 +62,8 @@ public class FileManager {
     public Calendar getCalendar() {
         CalendarBuilder builder = new CalendarBuilder();
         Calendar calendar = null;
-        String path = FileManager.class.getResource(this.userID + ".ics").getPath();
+        String path = "src" + File.separator + "main" + File.separator +
+                "resources" + File.separator + this.userID + ".ics";
 
         try (FileInputStream inputStream = new FileInputStream(path)) {
             calendar = builder.build(inputStream);
