@@ -24,7 +24,7 @@ public class AnswerGenerator {
                                              "Введите описание события"});
     }
 
-    public boolean isDialogFinished(int modeStep, String command) {
+    private boolean isDialogFinished(int modeStep, String command) {
         return modeStep >= this.lineStorage.get(command).length;
     }
 

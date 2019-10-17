@@ -15,4 +15,9 @@ public class TestAnswerGenerator {
         assertEquals("Вот твое расписание:" + generator.generateAllEventsList(),
                      generator.generateAnswerByLine("/show", 0));
     }
+
+    @Test
+    public void testFinishedDialog() {
+        assertEquals("Что-то пошло не так(", generator.generateAnswerByLine("/add", 4));
+    }
 }
