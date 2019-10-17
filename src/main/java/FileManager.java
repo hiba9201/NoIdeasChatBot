@@ -10,13 +10,25 @@ import java.io.*;
 
 public class FileManager {
     private String userID;
+    private String filePath;
 
     public FileManager(String userID) {
         this.userID = userID;
+        this.filePath = "src" + File.separator + "main" + File.separator +
+                "resources" + File.separator + this.userID + ".ics";
     }
 
-    public void addEvent(AdditionEvent event) throws IOException {
-        Calendar calendar = this.getCalendar();
+    public Calendar addEvent(AdditionEvent event) throws IOException {
+        Calendar calendar = null;
+
+        File file = new File(filePath);
+        if (!file.exists()) {
+            calendar = this.createCalender(file);
+        } else {
+            calendar = this.getCalendar();
+        }
+        assert calendar != null;
+
         String eventName = event.getName();
 
         java.util.Calendar startDate = event.getDate();
@@ -25,22 +37,17 @@ public class FileManager {
         VEvent meeting = new VEvent(start, eventName);
 
         meeting.getProperties().add(new Description(event.getDescription()));
-
         meeting.getProperties().add(new Uid(this.userID));
 
         calendar.getComponents().add(meeting);
         this.saveCalendar(calendar);
+        return calendar;
     }
 
     private void saveCalendar(Calendar calendar) throws IOException {
-        File file = new File("src" + File.separator + "main" + File.separator +
-                "resources" + File.separator + this.userID + ".ics");
+        File file = new File(filePath);
         if (!file.exists()) {
-            try {
-                file.createNewFile();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            // Кидать ошибку, что календарь пуст
         }
 
         FileOutputStream fileOutputStream = new FileOutputStream(file);
@@ -52,20 +59,25 @@ public class FileManager {
         }
     }
 
-    public void createCalender() {
+    private Calendar createCalender(File file) throws IOException {
+        file.createNewFile();
         Calendar calendar = new Calendar();
         calendar.getProperties().add(new ProdId("-//timeManagementChatBot"));
         calendar.getProperties().add(Version.VERSION_2_0);
         calendar.getProperties().add(CalScale.GREGORIAN);
+        return calendar;
     }
 
     public Calendar getCalendar() {
+        File file = new File(filePath);
+        if (!file.exists()) {
+            // Кидать ошибку, что календарь пуст
+        }
+
         CalendarBuilder builder = new CalendarBuilder();
         Calendar calendar = null;
-        String path = "src" + File.separator + "main" + File.separator +
-                "resources" + File.separator + this.userID + ".ics";
 
-        try (FileInputStream inputStream = new FileInputStream(path)) {
+        try (FileInputStream inputStream = new FileInputStream(filePath)) {
             calendar = builder.build(inputStream);
         } catch (IOException | ParserException e) {
             e.printStackTrace();
