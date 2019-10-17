@@ -1,5 +1,3 @@
-import net.fortuna.ical4j.model.Calendar;
-
 import java.io.IOException;
 import java.text.ParseException;
 
@@ -21,6 +19,7 @@ public class DialogLogic {
                         this.event.setDate(command);
                     } catch (ParseException e) {
                         e.printStackTrace();
+                        return this.answerGenerator.generateAnswerByLine("/add", modeStep);
                     }
                     break;
                 case 2:
@@ -28,6 +27,7 @@ public class DialogLogic {
                         this.event.setTime(command);
                     } catch (ParseException e) {
                         e.printStackTrace();
+                        return this.answerGenerator.generateAnswerByLine("/add", modeStep);
                     }
                     break;
                 case 3:
