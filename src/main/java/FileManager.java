@@ -56,14 +56,12 @@ public class FileManager {
             calendar = this.createCalender(new File(this.filePath));
         }
 
-        FileOutputStream fileOutputStream = new FileOutputStream(file);
         CalendarOutputter outputter = new CalendarOutputter();
-        try {
+        try (FileOutputStream fileOutputStream = new FileOutputStream(file)) {
             outputter.output(calendar, fileOutputStream);
         } catch (ValidationException e) {
             e.printStackTrace();
         }
-        fileOutputStream.close();
     }
 
     private Calendar createCalender(File file) throws IOException {
@@ -95,7 +93,6 @@ public class FileManager {
     }
 
     public ComponentList getCalendarEvents() throws EmptyCalendarException {
-        Calendar calendar = getCalendar();
-        return calendar.getComponents(Component.VEVENT);
+        return this.getCalendar().getComponents(Component.VEVENT);
     }
 }
