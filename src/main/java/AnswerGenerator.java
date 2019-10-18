@@ -51,7 +51,12 @@ public class AnswerGenerator {
     public String generateAllEventsList() {
         StringBuilder result = new StringBuilder();
         FileManager userFile = new FileManager("0000");
-        ComponentList events = userFile.getCalendarEvents();
+        ComponentList events;
+        try {
+            events = userFile.getCalendarEvents();
+        } catch (EmptyCalendarException e) {
+            return "\nВаш календарь пока пуст :(\nНачните добавлять свои события использую /add";
+        }
 
         for (Object elem : events) {
             VEvent event = (VEvent) elem;

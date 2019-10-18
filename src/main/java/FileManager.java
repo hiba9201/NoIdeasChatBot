@@ -18,36 +18,42 @@ public class FileManager {
                 "resources" + File.separator + this.userID + ".ics";
     }
 
-    public Calendar addEvent(AdditionEvent event) throws IOException {
-        Calendar calendar = null;
-
-        File file = new File(filePath);
-        if (!file.exists()) {
-            calendar = this.createCalender(file);
-        } else {
+    public Calendar addEvent(AdditionEvent additionEvent) throws IOException {
+        Calendar calendar;
+        try {
             calendar = this.getCalendar();
+        } catch (EmptyCalendarException e) {
+            calendar = this.createCalender(new File(this.filePath));
         }
         assert calendar != null;
 
-        String eventName = event.getName();
-
-        java.util.Calendar startDate = event.getDate();
-        DateTime start = new DateTime(startDate.getTime());
-
-        VEvent meeting = new VEvent(start, eventName);
-
-        meeting.getProperties().add(new Description(event.getDescription()));
-        meeting.getProperties().add(new Uid(this.userID));
-
-        calendar.getComponents().add(meeting);
+        VEvent event = createVEvent(additionEvent);
+        calendar.getComponents().add(event);
         this.saveCalendar(calendar);
+
         return calendar;
     }
 
+    private VEvent createVEvent(AdditionEvent additionEvent) {
+        String eventName = additionEvent.getName();
+        DateTime start = new DateTime(additionEvent.getDate().getTime());
+        VEvent event = new VEvent(start, eventName);
+
+        event.getProperties().add(new Description(additionEvent.getDescription()));
+        event.getProperties().add(new Uid(this.userID));
+
+        return event;
+    }
+
     private void saveCalendar(Calendar calendar) throws IOException {
+        ComponentList events = calendar.getComponents();
+        if (events.isEmpty()) {
+            return; //или удалить файл?
+        }
+
         File file = new File(filePath);
         if (!file.exists()) {
-            // Кидать ошибку, что календарь пуст
+            calendar = this.createCalender(new File(this.filePath));
         }
 
         FileOutputStream fileOutputStream = new FileOutputStream(file);
@@ -57,6 +63,7 @@ public class FileManager {
         } catch (ValidationException e) {
             e.printStackTrace();
         }
+        fileOutputStream.close();
     }
 
     private Calendar createCalender(File file) throws IOException {
@@ -68,10 +75,10 @@ public class FileManager {
         return calendar;
     }
 
-    public Calendar getCalendar() {
-        File file = new File(filePath);
+    public Calendar getCalendar() throws EmptyCalendarException {
+        File file = new File(this.filePath);
         if (!file.exists()) {
-            // Кидать ошибку, что календарь пуст
+            throw new EmptyCalendarException("В календаре отсутствуют события", this.userID);
         }
 
         CalendarBuilder builder = new CalendarBuilder();
@@ -87,7 +94,7 @@ public class FileManager {
         return calendar;
     }
 
-    public ComponentList getCalendarEvents() {
+    public ComponentList getCalendarEvents() throws EmptyCalendarException {
         Calendar calendar = getCalendar();
         return calendar.getComponents(Component.VEVENT);
     }
