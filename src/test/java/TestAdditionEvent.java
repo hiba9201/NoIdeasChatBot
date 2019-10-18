@@ -5,92 +5,91 @@ import java.util.Calendar;
 import java.util.GregorianCalendar;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 
 public class TestAdditionEvent {
     private AdditionEvent additionEvent = new AdditionEvent();
 
     @Test
-    public void TestCorrectDate() throws ParseException {
-        Calendar c = new GregorianCalendar(2019, 9, 17, 9, 30, 0);
-        c.set(Calendar.MILLISECOND, 0);
+    public void testSetEventName() {
+        additionEvent.setName("Событие");
+        assertEquals("Событие", additionEvent.getName());
+    }
 
+    @Test
+    public void testSetEventDescription() {
+        additionEvent.setName("Описание");
+    }
+
+    @Test
+    public void testParseCorrectDate() throws ParseException {
+        Calendar calendar = new GregorianCalendar(2000, Calendar.DECEMBER, 11, 9, 54, 0);
+        additionEvent.setDate("11.12.2000");
+        additionEvent.setTime("09:54");
+        assertEquals(calendar.getTime(), additionEvent.getDate().getTime());
+    }
+
+    @Test
+    public void testParseCorrectTimeWithSingleCharacterInHours() throws ParseException {
+        Calendar calendar = new GregorianCalendar(2019, Calendar.OCTOBER, 17, 5, 5, 0);
         additionEvent.setDate("17.10.2019");
-        additionEvent.setTime("09:30");
-        assertEquals(c.getTime().toString(), additionEvent.getDate().getTime().toString());
+        additionEvent.setTime("5:5");
+        assertEquals(calendar.getTime(), additionEvent.getDate().getTime());
     }
 
     @Test
-    public void Test12Hours() throws ParseException {
-        Calendar c = new GregorianCalendar(2019, 9, 17, 12, 30, 0);
-        c.set(Calendar.MILLISECOND, 0);
-
-        additionEvent.setDate("17.10.2019");
-        additionEvent.setTime("12:30");
-        assertEquals(c.getTime().toString(), additionEvent.getDate().getTime().toString());
+    public void testParseCorrectDateWithSingleCharacterInDay() throws ParseException {
+        Calendar calendar = new GregorianCalendar(2019, Calendar.OCTOBER, 7, 15, 15, 0);
+        additionEvent.setDate("7.10.2019");
+        additionEvent.setTime("15:15");
+        assertEquals(calendar.getTime(), additionEvent.getDate().getTime());
     }
 
     @Test
-    public void TestMoreThen12Hours() throws ParseException {
-        Calendar c = new GregorianCalendar(2019, 9, 17, 19, 30, 0);
-        c.set(Calendar.MILLISECOND, 0);
-
-        additionEvent.setDate("17.10.2019");
-        additionEvent.setTime("19:30");
-        assertEquals(c.getTime().toString(), additionEvent.getDate().getTime().toString());
+    public void testParseCorrectTime12Hours() throws ParseException {
+        Calendar calendar = new GregorianCalendar(2030, Calendar.JANUARY, 18, 12, 15, 0);
+        additionEvent.setDate("18.01.2030");
+        additionEvent.setTime("12:15");
+        assertEquals(calendar.getTime(), additionEvent.getDate().getTime());
     }
 
     @Test
-    public void TestLessThen12Hours() throws ParseException {
-        Calendar c = new GregorianCalendar(2019, 9, 17, 7, 30, 0);
-        c.set(Calendar.MILLISECOND, 0);
-
-        additionEvent.setDate("17.10.2019");
-        additionEvent.setTime("7:30");
-        assertEquals(c.getTime().toString(), additionEvent.getDate().getTime().toString());
+    public void testParseCorrectTimeMoreThen12Hours() throws ParseException {
+        Calendar calendar = new GregorianCalendar(2018, Calendar.MAY, 20, 14, 10, 0);
+        additionEvent.setDate("20.05.2018");
+        additionEvent.setTime("14:10");
+        assertEquals(calendar.getTime(), additionEvent.getDate().getTime());
     }
 
     @Test
-    public void TestUnformatDate() {
-        Throwable e = null;
-        try {
-            additionEvent.setDate("17/10/2019");
-        } catch (ParseException ex) {
-            e = ex;
-        }
-        assertTrue(e instanceof ParseException);
+    public void testParseCorrectTimeLessThen12Hours() throws ParseException {
+        Calendar calendar = new GregorianCalendar(2002, Calendar.FEBRUARY, 27, 7, 30, 0);
+        additionEvent.setDate("27.02.2002");
+        additionEvent.setTime("07:30");
+        assertEquals(calendar.getTime(), additionEvent.getDate().getTime());
     }
 
-    @Test
-    public void TestUnformatTime() {
-        Throwable e = null;
-        try {
-            additionEvent.setTime("10.10");
-        } catch (ParseException ex) {
-            e = ex;
-        }
-        assertTrue(e instanceof ParseException);
+    @Test(expected = ParseException.class)
+    public void testParseUnformatDate() throws ParseException {
+        additionEvent.setDate("17/10/2019");
     }
 
-    @Test
-    public void TestIncorrectDate() throws ParseException {
-        Throwable e = null;
-        try {
-            additionEvent.setDate("32.10.2019");
-        } catch (ParseException ex) {
-            e = ex;
-        }
-        assertTrue(e instanceof ParseException);
+    @Test(expected = ParseException.class)
+    public void testParseUnformatTime() throws ParseException {
+        additionEvent.setTime("10.10");
     }
 
-    @Test
-    public void TestUIncorrectTime() {
-        Throwable e = null;
-        try {
-            additionEvent.setTime("25:10");
-        } catch (ParseException ex) {
-            e = ex;
-        }
-        assertTrue(e instanceof ParseException);
+    @Test(expected = ParseException.class)
+    public void testParseDateWithIncorrectDay() throws ParseException {
+        additionEvent.setDate("32.10.2019");
+    }
+
+    @Test(expected = ParseException.class)
+    public void testParseDateWithIncorrectMonth() throws ParseException {
+        additionEvent.setDate("10.13.2019");
+    }
+
+    @Test(expected = ParseException.class)
+    public void testParseUIncorrectTime() throws ParseException {
+        additionEvent.setTime("25:10");
     }
 }
