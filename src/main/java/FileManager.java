@@ -51,7 +51,7 @@ public class FileManager {
             return; //или удалить файл?
         }
 
-        File file = new File(filePath);
+        File file = new File(this.filePath);
         if (!file.exists()) {
             calendar = this.createCalender(new File(this.filePath));
         }
