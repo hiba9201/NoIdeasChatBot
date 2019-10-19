@@ -10,62 +10,80 @@ import java.io.*;
 
 public class FileManager {
     private String userID;
+    private String filePath;
 
     public FileManager(String userID) {
         this.userID = userID;
+        this.filePath = "src" + File.separator + "main" + File.separator +
+                "resources" + File.separator + this.userID + ".ics";
     }
 
-    public void addEvent(AdditionEvent event) throws IOException {
-        Calendar calendar = this.getCalendar();
-        String eventName = event.getName();
+    public Calendar addEvent(AdditionEvent additionEvent) throws IOException {
+        Calendar calendar;
+        try {
+            calendar = this.getCalendar();
+        } catch (EmptyCalendarException e) {
+            calendar = this.createCalender(new File(this.filePath));
+        }
+        assert calendar != null;
 
-        java.util.Calendar startDate = event.getDate();
-        DateTime start = new DateTime(startDate.getTime());
-
-        VEvent meeting = new VEvent(start, eventName);
-
-        meeting.getProperties().add(new Description(event.getDescription()));
-
-        meeting.getProperties().add(new Uid(this.userID));
-
-        calendar.getComponents().add(meeting);
+        VEvent event = createVEvent(additionEvent);
+        calendar.getComponents().add(event);
         this.saveCalendar(calendar);
+
+        return calendar;
+    }
+
+    private VEvent createVEvent(AdditionEvent additionEvent) {
+        String eventName = additionEvent.getName();
+        DateTime start = new DateTime(additionEvent.getDate().getTime());
+        VEvent event = new VEvent(start, eventName);
+
+        event.getProperties().add(new Description(additionEvent.getDescription()));
+        event.getProperties().add(new Uid(this.userID));
+
+        return event;
     }
 
     private void saveCalendar(Calendar calendar) throws IOException {
-        File file = new File("src" + File.separator + "main" + File.separator +
-                "resources" + File.separator + this.userID + ".ics");
-        if (!file.exists()) {
-            try {
-                file.createNewFile();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+        ComponentList events = calendar.getComponents();
+        File file = new File(this.filePath);
+
+        if (events.isEmpty()) {
+            file.delete();
         }
 
-        FileOutputStream fileOutputStream = new FileOutputStream(file);
+        if (!file.exists()) {
+            calendar = this.createCalender(new File(this.filePath));
+        }
+
         CalendarOutputter outputter = new CalendarOutputter();
-        try {
+        try (FileOutputStream fileOutputStream = new FileOutputStream(file)) {
             outputter.output(calendar, fileOutputStream);
         } catch (ValidationException e) {
             e.printStackTrace();
         }
     }
 
-    public void createCalender() {
+    private Calendar createCalender(File file) throws IOException {
+        file.createNewFile();
         Calendar calendar = new Calendar();
         calendar.getProperties().add(new ProdId("-//timeManagementChatBot"));
         calendar.getProperties().add(Version.VERSION_2_0);
         calendar.getProperties().add(CalScale.GREGORIAN);
+        return calendar;
     }
 
-    public Calendar getCalendar() {
+    public Calendar getCalendar() throws EmptyCalendarException {
+        File file = new File(this.filePath);
+        if (!file.exists()) {
+            throw new EmptyCalendarException("В календаре отсутствуют события", this.userID);
+        }
+
         CalendarBuilder builder = new CalendarBuilder();
         Calendar calendar = null;
-        String path = "src" + File.separator + "main" + File.separator +
-                "resources" + File.separator + this.userID + ".ics";
 
-        try (FileInputStream inputStream = new FileInputStream(path)) {
+        try (FileInputStream inputStream = new FileInputStream(filePath)) {
             calendar = builder.build(inputStream);
         } catch (IOException | ParserException e) {
             e.printStackTrace();
@@ -75,8 +93,7 @@ public class FileManager {
         return calendar;
     }
 
-    public ComponentList getCalendarEvents() {
-        Calendar calendar = getCalendar();
-        return calendar.getComponents(Component.VEVENT);
+    public ComponentList getCalendarEvents() throws EmptyCalendarException {
+        return this.getCalendar().getComponents(Component.VEVENT);
     }
 }
