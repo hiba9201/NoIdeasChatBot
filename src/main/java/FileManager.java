@@ -47,11 +47,12 @@ public class FileManager {
 
     private void saveCalendar(Calendar calendar) throws IOException {
         ComponentList events = calendar.getComponents();
+        File file = new File(this.filePath);
+
         if (events.isEmpty()) {
-            return; //или удалить файл?
+            file.delete();
         }
 
-        File file = new File(this.filePath);
         if (!file.exists()) {
             calendar = this.createCalender(new File(this.filePath));
         }
