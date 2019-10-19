@@ -5,8 +5,8 @@ import java.util.GregorianCalendar;
 import java.util.Locale;
 
 public class AdditionEvent {
-    private String name;
-    private String description;
+    private String name = "";
+    private String description = "";
     private Calendar date = new GregorianCalendar();
 
     public String getName() {
