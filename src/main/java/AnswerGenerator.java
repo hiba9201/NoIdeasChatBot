@@ -55,7 +55,7 @@ public class AnswerGenerator {
         try {
             events = userFile.getCalendarEvents();
         } catch (EmptyCalendarException e) {
-            return "\nВаш календарь пока пуст :(\nНачните добавлять свои события использую /add";
+            return "\nВаш календарь пока пуст :(\nЧтобы добавить событие, введите /add";
         }
 
         for (Object elem : events) {
