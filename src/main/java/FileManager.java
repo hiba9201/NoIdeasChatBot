@@ -6,11 +6,20 @@ import net.fortuna.ical4j.model.component.VEvent;
 import net.fortuna.ical4j.model.property.*;
 
 import java.io.*;
+import java.util.Comparator;
 
 
 public class FileManager {
     private String userID;
     private String filePath;
+    private Comparator<VEvent> comparator = new Comparator<VEvent>() {
+        @Override
+        public int compare(VEvent firstEvent, VEvent secondEvent) {
+            Date firstDate = firstEvent.getStartDate().getDate();
+            Date secondDate = secondEvent.getStartDate().getDate();
+            return firstDate.compareTo(secondDate);
+        }
+    };
 
     public FileManager(String userID) {
         this.userID = userID;
@@ -94,6 +103,8 @@ public class FileManager {
     }
 
     public ComponentList getCalendarEvents() throws EmptyCalendarException {
-        return this.getCalendar().getComponents(Component.VEVENT);
+        ComponentList events = this.getCalendar().getComponents(Component.VEVENT);
+        events.sort(comparator);
+        return events;
     }
 }
