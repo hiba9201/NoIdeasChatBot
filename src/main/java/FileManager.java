@@ -1,6 +1,9 @@
 import net.fortuna.ical4j.data.CalendarBuilder;
 import net.fortuna.ical4j.data.CalendarOutputter;
 import net.fortuna.ical4j.data.ParserException;
+import net.fortuna.ical4j.filter.Filter;
+import net.fortuna.ical4j.filter.PeriodRule;
+import net.fortuna.ical4j.filter.Rule;
 import net.fortuna.ical4j.model.*;
 import net.fortuna.ical4j.model.component.VEvent;
 import net.fortuna.ical4j.model.property.*;
@@ -102,9 +105,16 @@ public class FileManager {
         return calendar;
     }
 
-    public ComponentList getCalendarEvents() throws EmptyCalendarException {
-        ComponentList events = this.getCalendar().getComponents(Component.VEVENT);
-        events.sort(comparator);
-        return events;
+    public ComponentList getCalendarEvents(Period period) throws EmptyCalendarException {
+        Calendar calendar = this.getCalendar();
+        Filter filter = new Filter(new Rule[0], Filter.MATCH_ALL);
+
+        if (period != null) {
+            filter = new Filter(new Rule[] {new PeriodRule(period)}, Filter.MATCH_ALL);
+        }
+
+        ComponentList filtered = (ComponentList) filter.filter(calendar.getComponents());
+        filtered.sort(comparator);
+        return filtered;
     }
 }

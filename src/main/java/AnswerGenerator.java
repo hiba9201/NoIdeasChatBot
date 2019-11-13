@@ -1,10 +1,11 @@
-import net.fortuna.ical4j.model.ComponentList;
+import net.fortuna.ical4j.model.*;
+import net.fortuna.ical4j.model.Date;
 import net.fortuna.ical4j.model.component.VEvent;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
+import java.util.Calendar;
 
 public class AnswerGenerator {
     private Map<String, String[]> lineStorage = new HashMap<>();
@@ -53,9 +54,9 @@ public class AnswerGenerator {
         FileManager userFile = new FileManager("0000");
         ComponentList events;
         try {
-            events = userFile.getCalendarEvents();
+            events = userFile.getCalendarEvents(Periods.getPeriod(TimeInterval.WEEK));
         } catch (EmptyCalendarException e) {
-            return "\nВаш календарь пока пуст :(\nЧтобы добавить событие, введите /add";
+            return "\nНет событий в текущем периоде :(\nЧтобы добавить событие, введите /add";
         }
 
         for (Object elem : events) {
