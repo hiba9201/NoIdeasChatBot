@@ -1,16 +1,28 @@
 import net.fortuna.ical4j.data.CalendarBuilder;
 import net.fortuna.ical4j.data.CalendarOutputter;
 import net.fortuna.ical4j.data.ParserException;
+import net.fortuna.ical4j.filter.Filter;
+import net.fortuna.ical4j.filter.PeriodRule;
+import net.fortuna.ical4j.filter.Rule;
 import net.fortuna.ical4j.model.*;
 import net.fortuna.ical4j.model.component.VEvent;
 import net.fortuna.ical4j.model.property.*;
 
 import java.io.*;
+import java.util.Comparator;
 
 
 public class FileManager {
     private String userID;
     private String filePath;
+    private Comparator<VEvent> comparator = new Comparator<VEvent>() {
+        @Override
+        public int compare(VEvent firstEvent, VEvent secondEvent) {
+            Date firstDate = firstEvent.getStartDate().getDate();
+            Date secondDate = secondEvent.getStartDate().getDate();
+            return firstDate.compareTo(secondDate);
+        }
+    };
 
     public FileManager(String userID) {
         this.userID = userID;
@@ -93,7 +105,16 @@ public class FileManager {
         return calendar;
     }
 
-    public ComponentList getCalendarEvents() throws EmptyCalendarException {
-        return this.getCalendar().getComponents(Component.VEVENT);
+    public ComponentList getCalendarEvents(Period period) throws EmptyCalendarException {
+        Calendar calendar = this.getCalendar();
+        Filter filter = new Filter(new Rule[0], Filter.MATCH_ALL);
+
+        if (period != null) {
+            filter = new Filter(new Rule[] {new PeriodRule(period)}, Filter.MATCH_ALL);
+        }
+
+        ComponentList filtered = (ComponentList) filter.filter(calendar.getComponents());
+        filtered.sort(comparator);
+        return filtered;
     }
 }
