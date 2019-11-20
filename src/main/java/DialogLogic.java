@@ -1,4 +1,3 @@
-import java.io.IOException;
 import java.text.ParseException;
 
 public class DialogLogic {
@@ -7,8 +6,8 @@ public class DialogLogic {
     private int modeStep = 0;
     private AdditionEvent event = new AdditionEvent();
 
-    public String executeCommand(String command) {
-        FileManager userFile = new FileManager("0000");
+    public String executeCommand(String command, Long chatId) {
+        CalendarManager db = new CalendarManager();
         if (this.currentMode == DialogMode.ADD) {
             switch (this.modeStep) {
                 case 0:
@@ -19,7 +18,7 @@ public class DialogLogic {
                         this.event.setDate(command);
                     } catch (ParseException e) {
                         e.printStackTrace();
-                        return this.answerGenerator.generateAnswerByLine("/add", modeStep);
+                        return this.answerGenerator.generateAnswerByLine("/add", modeStep, chatId);
                     }
                     break;
                 case 2:
@@ -27,7 +26,7 @@ public class DialogLogic {
                         this.event.setTime(command);
                     } catch (ParseException e) {
                         e.printStackTrace();
-                        return this.answerGenerator.generateAnswerByLine("/add", modeStep);
+                        return this.answerGenerator.generateAnswerByLine("/add", modeStep, chatId);
                     }
                     break;
                 case 3:
@@ -36,11 +35,7 @@ public class DialogLogic {
                     this.currentMode = DialogMode.DEFAULT;
                     this.modeStep = 0;
 
-                    try {
-                        userFile.addEvent(this.event);
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
+                    db.addEvent(this.event, chatId);
 
                     this.event = new AdditionEvent();
 
@@ -55,6 +50,10 @@ public class DialogLogic {
             this.currentMode = DialogMode.ADD;
         }
 
-        return this.answerGenerator.generateAnswerByLine(command, modeStep);
+        return this.answerGenerator.generateAnswerByLine(command, modeStep, chatId);
+    }
+
+    public DialogMode getDialogMode() {
+        return currentMode;
     }
 }
