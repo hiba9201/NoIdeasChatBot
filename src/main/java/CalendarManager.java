@@ -1,4 +1,9 @@
-import com.mongodb.*;
+import com.mongodb.client.MongoClients;
+import com.mongodb.client.MongoClient;
+import com.mongodb.client.FindIterable;
+import com.mongodb.client.MongoCollection;
+import com.mongodb.client.MongoDatabase;
+import com.mongodb.client.model.Filters;
 import net.fortuna.ical4j.data.CalendarBuilder;
 import net.fortuna.ical4j.data.CalendarOutputter;
 import net.fortuna.ical4j.data.ParserException;
@@ -8,25 +13,24 @@ import net.fortuna.ical4j.filter.Rule;
 import net.fortuna.ical4j.model.*;
 import net.fortuna.ical4j.model.component.VEvent;
 import net.fortuna.ical4j.model.property.*;
+import org.bson.Document;
 
 import java.io.*;
 import java.util.Comparator;
-import java.net.UnknownHostException;
 
 
 public class CalendarManager {
     private MongoClient mongoClient;
 
-    {
-        try {
-            mongoClient = new MongoClient(new MongoClientURI(System.getenv("MONGODB_URI")));
-        } catch (UnknownHostException e) {
-            e.printStackTrace();
-        }
-    }
+    private MongoDatabase db;
+    private MongoCollection<Document> table;
 
-    private DB db = mongoClient.getDB("heroku_wrfvc3pn");
-    private DBCollection table = db.getCollection("Schedules");
+    public CalendarManager() {
+        String uri = System.getenv("MONGODB_URI");
+        mongoClient = MongoClients.create(uri);
+        db = mongoClient.getDatabase("TMB_DB");
+        table = db.getCollection("Schedules");
+    }
 
     private Comparator<VEvent> comparator = new Comparator<VEvent>() {
         @Override
@@ -54,10 +58,10 @@ public class CalendarManager {
     }
 
     private void createUser(Long id) {
-        DBObject newUser = new BasicDBObject("_id", id)
+        Document newUser = new Document("_id", id)
                 .append("schedule", null);
 
-        table.insert(newUser);
+        table.insertOne(newUser);
     }
 
     private VEvent createVEvent(AdditionEvent additionEvent, Long id) {
@@ -72,19 +76,16 @@ public class CalendarManager {
     }
 
     private void saveCalendar(Calendar calendar, Long id) {
-        DBObject query = new BasicDBObject("_id", id);
-        DBObject user = table.findOne(query);
+        String strCalendar = calendarToString(calendar);
+        Document schedule = new Document("$set", new Document("schedule", strCalendar));
 
-        if (user == null) {
+        FindIterable<Document> user = table.find(Filters.eq("_id", id));
+
+        if (user.first() == null) {
             createUser(id);
-            user = table.findOne(query);
         }
 
-        String strCalendar = calendarToString(calendar);
-
-        DBObject schedule = new BasicDBObject("schedule", strCalendar);
-
-        table.update(user, schedule);
+        table.updateOne(Filters.eq("_id", id), schedule);
     }
 
     private String calendarToString(Calendar calendar) {
@@ -108,22 +109,19 @@ public class CalendarManager {
     }
 
     public Calendar getCalendar(Long id) throws EmptyCalendarException {
-        DBObject query = new BasicDBObject("_id", id);
-        DBObject user = table.findOne(query);
+        FindIterable<Document> user = table.find(Filters.eq("_id", id));
 
-        if (user == null) {
-            DBObject newUser = new BasicDBObject("_id", id)
-                    .append("schedule", null);
-            table.insert(newUser);
+        if (user.first() == null) {
+            createUser(id);
 
-            user = table.findOne(query);
+            user = table.find(Filters.eq("_id", id));
         }
 
-        if (user.get("schedule") == null) {
+        if (user.first().get("schedule") == null) {
             throw new EmptyCalendarException("В календаре отсутствуют события", id.toString());
         }
 
-        StringReader sin = new StringReader(String.valueOf(user.get("schedule")));
+        StringReader sin = new StringReader(String.valueOf(user.first().get("schedule")));
         CalendarBuilder builder = new CalendarBuilder();
         Calendar calendar = null;
 
