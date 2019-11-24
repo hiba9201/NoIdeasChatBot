@@ -26,8 +26,7 @@ public class CalendarManager {
     private MongoCollection<Document> table;
 
     public CalendarManager() {
-        String uri = System.getenv("MONGODB_URI");
-        mongoClient = MongoClients.create(uri);
+        mongoClient = MongoClients.create();
         db = mongoClient.getDatabase("TMB_DB");
         table = db.getCollection("Schedules");
     }
