@@ -1,10 +1,9 @@
-import net.fortuna.ical4j.model.ComponentList;
+import net.fortuna.ical4j.model.*;
 import net.fortuna.ical4j.model.component.VEvent;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 public class AnswerGenerator {
     private Map<String, String[]> lineStorage = new HashMap<>();
@@ -13,7 +12,8 @@ public class AnswerGenerator {
         lineStorage.put("/start",
                 new String[]{"Привет, я помогу составить твое расписание. Чтобы узнать больше, введи /help"});
         lineStorage.put("/help", new String[]{"Я бот, помогающий составить расписание. Вот что я могу:\n" +
-                "Показать все события - /show\n" +
+                "Показать все события - /show [period]\n" +
+                "period может быть day, week или month. Если периода нет, то показываются все события\n" +
                 "Вывести это сообщение - /help\n" +
                 "Добавить событие - /add"});
         lineStorage.put("/show", new String[]{"Вот твое расписание:"});
@@ -28,34 +28,39 @@ public class AnswerGenerator {
         return modeStep >= this.lineStorage.get(command).length;
     }
 
-    public String generateAnswerByLine(String line, int modeStep) {
-
-        if (!this.lineStorage.containsKey(line)) {
+    public String generateAnswerByLine(String line, int modeStep, Long chatId) {
+        if (!this.lineStorage.containsKey(line.split(" ")[0])) {
             return this.lineStorage.get("/else")[0];
         }
 
-        if (this.isDialogFinished(modeStep, line)) {
+        if (this.isDialogFinished(modeStep, line.split(" ")[0])) {
             return "Что-то пошло не так(";
         }
 
-        String answer = this.lineStorage.get(line)[modeStep];
+        String answer = this.lineStorage.get(line.split(" ")[0])[modeStep];
 
-        switch (line) {
+        switch (line.trim()) {
             case "/show":
-                return answer + this.generateAllEventsList();
+                return answer + this.generateAllEventsList(chatId, Periods.getPeriod(TimeInterval.ALL));
+            case "/show day":
+                return answer + this.generateAllEventsList(chatId, Periods.getPeriod(TimeInterval.DAY));
+            case "/show week":
+                return answer + this.generateAllEventsList(chatId, Periods.getPeriod(TimeInterval.WEEK));
+            case "/show month":
+                return answer + this.generateAllEventsList(chatId, Periods.getPeriod(TimeInterval.MONTH));
             default:
                 return answer;
         }
     }
 
-    public String generateAllEventsList() {
+    public String generateAllEventsList(Long chatId, Period period) {
         StringBuilder result = new StringBuilder();
-        FileManager userFile = new FileManager("0000");
+        CalendarManager userFile = new CalendarManager();
         ComponentList events;
         try {
-            events = userFile.getCalendarEvents();
+            events = userFile.getCalendarEvents(chatId, period);
         } catch (EmptyCalendarException e) {
-            return "\nВаш календарь пока пуст :(\nЧтобы добавить событие, введите /add";
+            return "\nНет событий в текущем периоде :(\nЧтобы добавить событие, введите /add";
         }
 
         for (Object elem : events) {
