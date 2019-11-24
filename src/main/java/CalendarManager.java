@@ -53,7 +53,6 @@ public class CalendarManager {
         VEvent event = createVEvent(additionEvent, id);
         calendar.getComponents().add(event);
         this.saveCalendar(calendar, id);
-
     }
 
     private void createUser(Long id) {
