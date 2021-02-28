@@ -1,5 +1,5 @@
 # NoIdeasChatBot
-Telegram chat bot for Universit
+Чат-бот для телеграмма с курса по ООП
 
 # Содержание
 * [2 задача](#2_задача)
